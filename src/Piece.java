@@ -1,7 +1,6 @@
 /**
- * This enumeration contains the different pieces that can be used.
+ * This enumeration contains the different pieces that can be used for the GasTycoon game.
  */
-
 public enum Piece {
 	EMPTY,
 	PIPELINE_ANGLED,
