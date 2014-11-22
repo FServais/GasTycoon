@@ -1,8 +1,8 @@
 /**
  * This interface contains the common methods to get information about a cell of GasTycoon board.
  */
-public interface CellInterface {
-
+public interface CellInterface 
+{
 	/**
 	 * Get the piece type.
 	 * @return The piece type.

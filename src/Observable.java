@@ -3,7 +3,7 @@
  */
 public abstract class Observable 
 {	
-	private Observer observer; // The state observer
+	private Observer observer = null; // The state observer
 	
 	/**
 	 * Link a observer to object
@@ -21,6 +21,7 @@ public abstract class Observable
 	 */
 	public void notify_obs(boolean board_updated)
 	{
-		observer.update(board_updated);
+		if(observer != null)
+			observer.update(board_updated);
 	}
 }
