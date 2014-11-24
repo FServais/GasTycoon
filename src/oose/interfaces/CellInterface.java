@@ -1,3 +1,5 @@
+package oose.interfaces;
+
 /**
  * This interface contains the common methods to get information about a cell of GasTycoon board.
  */
