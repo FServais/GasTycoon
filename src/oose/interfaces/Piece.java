@@ -1,3 +1,5 @@
+package oose.interfaces;
+
 /**
  * This enumeration contains the different pieces that can be used for the GasTycoon game.
  */

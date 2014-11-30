@@ -1,7 +1,7 @@
-import java.time.Duration;
+package oose.interfaces;
 
 /**
- * This interface contains the methods, implemented by the logic part of the game, that allows
+ * This interface contains the methods, implemented by the oose.logic part of the game, that allows
  * any counterpart object to access to the state of the 
  */
 
@@ -26,10 +26,16 @@ public interface LogicInterface
 	public int getScore();
 	
 	/**
-	 * Get the duration of the game
-	 * @return The duration of the game
+	 * Get the duration of the game (seconds part)
+	 * @return The duration of the game (seconds part)
 	 */
-	public Duration getChrono();
+	public int getChronoSeconds();
+	
+	/**
+	 * Get the duration of the game (minutes part)
+	 * @return The duration of the game (minutes part)
+	 */
+	public int getChronoMinutes();
 	
 	/**
 	 * Check if the user has won the game
