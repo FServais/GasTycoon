@@ -1,9 +1,5 @@
 .classpath
 .project
 .settings/org.eclipse.jdt.core.prefs
-bin/CellInterface.class
-bin/LogicInterface.class
-bin/Observable.class
-bin/Observer.class
-bin/Orientation.class
-bin/Piece.class
+bin/*
+*vpp~[0-9]
