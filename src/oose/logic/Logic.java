@@ -1,13 +1,10 @@
 package oose.logic;
 
-import oose.interfaces.CellInterface;
-import oose.interfaces.LogicInterface;
-import oose.interfaces.Observable;
-import oose.interfaces.Observer;
+import oose.interfaces.*;
+import oose.logic.cells.SupplyObserver;
 
-public class GasTycoonLogic implements LogicInterface, Observable 
+public class Logic implements LogicInterface, Observable , SupplyObserver
 {
-
 	Observer observer = null;
 	
 	@Override
@@ -84,6 +81,12 @@ public class GasTycoonLogic implements LogicInterface, Observable
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void update_supply(boolean supplied, int cell_id) 
+	{
+	
 	}
 
 }
