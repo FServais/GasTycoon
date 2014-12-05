@@ -1,5 +1,6 @@
 package oose.logic;
 
+import java.util.Date;
 import java.util.Stack;
 
 import oose.interfaces.*;
@@ -10,19 +11,31 @@ import oose.logic.command.Rotation;
 public class Logic implements LogicInterface, Observable , SupplyObserver
 {
 	private Observer observer = null;
-	
-	// state parameters
+
 	private int nb_moves = 0; // number of moves of the player
 	private boolean[] supplied = null; // array of boolean specifying if the fireplace cells are supplied
-	private Board board; // the game board
+	private Board board = null; // the game board
+	private long start = -1; // game start
+	private Parser parser = null; // initial config file parser
+	private Stack<Command> command_stack = null; // store the previous commands of the user
 	
-	// commands
-	private Stack<Command> command_stack = null;
+	/**
+	 * Construct a logic object
+	 * @param filepath The path of the file containing the configuration
+	 */
+	public Logic(String filepath)
+	{
+		parser = new Parser(filepath);
+		board = parser.get_board();
+		command_stack = new Stack<Command>();
+	}
 	
 	@Override
 	public void attach(Observer observer) 
 	{	
 		this.observer = observer;
+		// the game starts : starts the chrono
+		start = System.currentTimeMillis();
 	}
 
 	@Override
@@ -55,15 +68,15 @@ public class Logic implements LogicInterface, Observable , SupplyObserver
 	@Override
 	public int getChronoSeconds() 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		long now = System.currentTimeMillis();
+		return (int) ((now - start) / 1000) % 60;
 	}
 
 	@Override
 	public int getChronoMinutes() 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		long now = System.currentTimeMillis();
+		return (int) ((now - start) / 60000) % 60;
 	}
 
 	@Override
@@ -95,8 +108,11 @@ public class Logic implements LogicInterface, Observable , SupplyObserver
 	@Override
 	public void reset() 
 	{
-		// TODO Auto-generated method stub
-
+		command_stack.clear();
+		board = parse.get_board();
+		nb_moves = 0;
+		// notify the observer
+		notify_obs(true);
 	}
 
 	@Override

@@ -14,9 +14,9 @@ public class Cell implements CellInterface
 {
 	Orientation orientation; /** cell orientation */
 	Piece piece; /** cell piece */
-	Cell[] neighbors = null;
-	boolean supplied = false; 
-	boolean[] connections = null;
+	Cell[] neighbors = null; /** array of neighbors : top right bottom left*/
+	boolean supplied = false;  /** true if the cell is supplied */
+	boolean[] connections = null; /** array specifying if the current cell can connect to its neighbours (top right bottom left)  */
 	
 	/**
 	 * Initialize cell members
@@ -45,45 +45,88 @@ public class Cell implements CellInterface
 	@Override
 	public Piece getPieceType() 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return piece;
 	}
 
 	@Override
 	public Orientation getOrientation() 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return orientation;
 	}
 
 	@Override
 	public boolean isSupplied() 
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return supplied;
 	}
 
 	@Override
 	public void clockwiseNext() 
 	{
-		// TODO Auto-generated method stub
-
+		rotate(true);
 	}
 
 	@Override
 	public void counterClockwiseNext() 
 	{
-		// TODO Auto-generated method stub
-
+		rotate(false);
 	}
 	
 	/**
-	 * Rotate the cell int the given die
-	 * @param clockwise
+	 * Rotate the cell int the given direction
+	 * @param clockwise The rotation direction
 	 */
 	public void rotate(boolean clockwise) 
 	{
-
+		circular_shift(connections, clockwise);
+		orientation = next(orientation, clockwise);
+	}
+	
+	/**
+	 * Find the orientation resulting from the rotation in the given direction
+	 * @param o The current orientation
+	 * @param clockwise The rotation direction
+	 * @return The resulting orientation
+	 */
+	private static Orientation next(Orientation o, boolean clockwise)
+	{
+		switch(o)
+		{
+		case UP:
+			return clockwise ? Orientation.RIGHT : Orientation.LEFT;
+		case LEFT:
+			return clockwise ? Orientation.UP : Orientation.DOWN;
+		case DOWN:
+			return clockwise ? Orientation.LEFT : Orientation.RIGHT;
+		case RIGHT:
+			return clockwise ? Orientation.DOWN : Orientation.UP;
+		default: 
+			return Orientation.UP; // normally, cannot be reached but otherwise error
+		}
+	}
+	
+	/**
+	 * Perform a circular shift of an array
+	 * @param array The array to shift
+	 * @param right True for shifting the array to the right, false for shifting it to the left
+	 */
+	private static void circular_shift(boolean[] array, boolean right)
+	{
+		boolean saved_value, tmp;
+		int i;
+		
+		saved_value = right ? array[array.length - 1] : array[0];
+		i = right ? 0 : array.length - 1;
+		
+		while(i < array.length && i >= 0)
+		{
+			tmp = array[i];
+			array[i] = saved_value;
+			saved_value = tmp;
+			
+			if(right) ++i;
+			else --i;
+		}
 	}
 	
 	/**

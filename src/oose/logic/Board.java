@@ -1,5 +1,6 @@
 package oose.logic;
 
+import oose.interfaces.CellInterface;
 import oose.logic.cells.Cell;
 
 public class Board 
@@ -38,5 +39,10 @@ public class Board
 	public void rotate(int i, int j, boolean clockwise)
 	{
 		board[i][j].rotate(clockwise);
+	}
+
+	public CellInterface[][] get_array() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
