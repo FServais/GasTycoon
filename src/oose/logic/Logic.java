@@ -1,11 +1,23 @@
 package oose.logic;
 
+import java.util.Stack;
+
 import oose.interfaces.*;
 import oose.logic.cells.SupplyObserver;
+import oose.logic.command.Command;
+import oose.logic.command.Rotation;
 
 public class Logic implements LogicInterface, Observable , SupplyObserver
 {
-	Observer observer = null;
+	private Observer observer = null;
+	
+	// state parameters
+	private int nb_moves = 0; // number of moves of the player
+	private boolean[] supplied = null; // array of boolean specifying if the fireplace cells are supplied
+	private Board board; // the game board
+	
+	// commands
+	private Stack<Command> command_stack = null;
 	
 	@Override
 	public void attach(Observer observer) 
@@ -24,15 +36,13 @@ public class Logic implements LogicInterface, Observable , SupplyObserver
 	@Override
 	public CellInterface[][] getBoard() 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return board.get_array();
 	}
 
 	@Override
 	public int getMoves() 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return nb_moves;
 	}
 
 	@Override
@@ -59,21 +69,27 @@ public class Logic implements LogicInterface, Observable , SupplyObserver
 	@Override
 	public boolean win() 
 	{
-		// TODO Auto-generated method stub
-		return false;
+		boolean win = true;
+		
+		for(boolean fp_supplied : supplied)
+			win &= fp_supplied;
+		
+		return win;
 	}
 
 	@Override
 	public void rotate(int i, int j) 
 	{
-		// TODO Auto-generated method stub
-
+		Rotation rot = new Rotation(i,j,board);
+		rot.execute();
+		command_stack.push(rot);
 	}
 
 	@Override
 	public void undo() 
 	{
-		// TODO Auto-generated method stub
+		Command rot = command_stack.pop();
+		rot.revert();
 	}
 
 	@Override
@@ -86,7 +102,7 @@ public class Logic implements LogicInterface, Observable , SupplyObserver
 	@Override
 	public void update_supply(boolean supplied, int cell_id) 
 	{
-	
+		this.supplied[cell_id] = supplied;
 	}
 
 }
