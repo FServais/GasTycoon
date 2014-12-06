@@ -6,9 +6,9 @@ import java.util.Stack;
 
 import oose.interfaces.*;
 import oose.logic.cells.SupplyObserver;
-import oose.logic.command.Command;
-import oose.logic.command.Rotation;
+import oose.logic.command.*;
 import oose.logic.exceptions.BadFileConfigurationException;
+import oose.logic.exceptions.BadPeriodException;
 
 /**
  * A class for handling the Gastycoon game logic
@@ -21,9 +21,9 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 	private int nb_moves = 0; // number of moves of the player
 	private boolean[] supplied = null; // array of boolean specifying if the fireplace cells are supplied
 	private Board board = null; // the game board
-	private long start = -1; // game start
 	private Parser parser = null; // initial config file parser
 	private Stack<Command> command_stack = null; // store the previous commands of the user
+	private PeriodicNotifier pn; // the periodic notifier for notifying chronometer update
 	
 	/**
 	 * Construct a logic object
@@ -36,6 +36,7 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 		parser = new Parser(filepath);
 		board = parser.get_board();
 		command_stack = new Stack<Command>();
+		pn = get_notifier();
 	}
 	
 	@Override
@@ -43,7 +44,7 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 	{	
 		this.observer = observer;
 		// the game starts : starts the chrono
-		start = System.currentTimeMillis();
+		pn.start();
 	}
 
 	@Override
@@ -76,14 +77,16 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 	@Override
 	public int getChronoSeconds() 
 	{
-		long now = System.currentTimeMillis();
+		long now = System.currentTimeMillis(), 
+			 start = pn.get_start_time();
 		return (int) ((now - start) / 1000) % 60;
 	}
 
 	@Override
 	public int getChronoMinutes() 
 	{
-		long now = System.currentTimeMillis();
+		long now = System.currentTimeMillis(), 
+			 start = pn.get_start_time();
 		return (int) ((now - start) / 60000) % 60;
 	}
 
@@ -104,6 +107,9 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 		Rotation rot = new Rotation(i,j,board);
 		rot.execute();
 		command_stack.push(rot);
+		nb_moves += 1;
+		
+		synchronized(this) { notify_obs(true); }
 	}
 
 	@Override
@@ -119,14 +125,31 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 		command_stack.clear();
 		board = parser.get_board();
 		nb_moves = 0;
+		
+		pn.stop_notifier();
+		
 		// notify the observer
-		notify_obs(true);
+		synchronized(this) { notify_obs(true); }
+		
+		pn = get_notifier();
+		pn.start(); // restart chronometer
 	}
 
 	@Override
 	public void update_supply(boolean supplied, int cell_id) 
 	{
 		this.supplied[cell_id] = supplied;
+	}
+	
+	/**
+	 * Return a periodic notifier object
+	 * @return The periodic notifier
+	 */
+	private PeriodicNotifier get_notifier()
+	{
+		try {
+			return new PeriodicNotifier(this, 1000);
+		} catch (BadPeriodException e) { return null; }
 	}
 
 }
