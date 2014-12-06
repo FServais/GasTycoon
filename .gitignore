@@ -2,4 +2,4 @@
 .project
 .settings/org.eclipse.jdt.core.prefs
 bin/*
-*vpp~[0-9]
+diagrams/gastycoon.vpp*
