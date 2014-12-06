@@ -1,5 +1,6 @@
 package oose.logic;
 
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Stack;
 
@@ -7,8 +8,13 @@ import oose.interfaces.*;
 import oose.logic.cells.SupplyObserver;
 import oose.logic.command.Command;
 import oose.logic.command.Rotation;
+import oose.logic.exceptions.BadFileConfigurationException;
 
-public class Logic implements LogicInterface, Observable , SupplyObserver
+/**
+ * A class for handling the Gastycoon game logic
+ * @author Servais Fabrice, Magera Floriane & Mormont Romain
+ */
+public class Logic implements LogicInterface, Observable, SupplyObserver
 {
 	private Observer observer = null;
 
@@ -22,8 +28,10 @@ public class Logic implements LogicInterface, Observable , SupplyObserver
 	/**
 	 * Construct a logic object
 	 * @param filepath The path of the file containing the configuration
+	 * @throws BadFileConfigurationException If the configuration file is not well formated
+	 * @throws FileNotFoundException If the configuration file is not found
 	 */
-	public Logic(String filepath)
+	public Logic(String filepath) throws FileNotFoundException, BadFileConfigurationException
 	{
 		parser = new Parser(filepath);
 		board = parser.get_board();
