@@ -117,7 +117,7 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 	public void reset() 
 	{
 		command_stack.clear();
-		board = parse.get_board();
+		board = parser.get_board();
 		nb_moves = 0;
 		// notify the observer
 		notify_obs(true);
