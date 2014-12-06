@@ -109,8 +109,18 @@ This report presents the solution we have developed for the INFO0063 course proj
 \subsection{Design}
 We have chosen sequence and class diagrams to document our application design. 
 \subsubsection{Interfaces}
-\subsubsection{Cells}
+The interfaces 
 \subsubsection{Logic}
+The logic core class is the \texttt{Logic} class which implements the logic interface and is thus the entry point of the logic subsystem. This class does not contain a lot of responsibilities. Indeed, these are delegated to other classes : 
+\begin{itemize}
+	\item reversible actions : classes \texttt{Stack<Command>}, \texttt{Command} and \texttt{Rotation} 
+	\item game board : classes \texttt{Board} and \texttt{Cell}
+	\item configuration file parsing : class \texttt{Parser}
+	\item chronometer : class \texttt{PeriodicNotifier}
+\end{itemize}
+These components are described in the diagram in Figure \ref{}
+\subsubsection{Cells}
+As board cell
 \subsubsection{Algorithms and data structures}
 \section{Applied patterns}
 \subsection{Observer}
