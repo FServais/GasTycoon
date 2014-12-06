@@ -2,15 +2,13 @@ package oose.logic.cells;
 
 import java.util.Vector;
 
-import oose.interfaces.CellInterface;
-import oose.interfaces.Orientation;
-import oose.interfaces.Piece;
+import oose.interfaces.*;
 
 /**
  * Class representing a cell of the board
  * @author Servais Fabrice, Magera Floriane & Mormont Romain
  */
-public class Cell extends ObservablePiece implements CellInterface
+public abstract class Cell extends ObservablePiece implements CellInterface
 {
 	Orientation orientation; /** cell orientation */
 	Piece piece; /** cell piece */
@@ -23,11 +21,9 @@ public class Cell extends ObservablePiece implements CellInterface
 	 */
 	private Cell()
 	{
+		neighbors = new Cell[4];
 		supplied = false;
 		connections = new boolean[4];
-		
-		for(int i = 0; i < 4; ++i)
-			connections[i] = false;
 	}
 	
 	/**
@@ -59,7 +55,49 @@ public class Cell extends ObservablePiece implements CellInterface
 	{
 		return supplied;
 	}
-
+	
+	public void set_supplied(boolean b)
+	{
+		supplied = b;
+	}
+	
+	/**
+	 * Change the state to "supply" and propagate to the neighbors.
+	 */
+	public void update_supplied(){
+		if(supplied)
+			return;
+		
+		supplied = true;
+		
+		for(int i = 0 ; i < 4 ; ++i)
+			if(connections[i] && neighbors[i] != null && neighbors[i].has_link_with((i+2)%4)) //(i+2)%4 : top (0) <-> bottom (2) ; left (3) <-> right (1)
+				neighbors[i].update_supplied();
+		
+	}
+	
+	/**
+	 * Check if the cell have a link with another cell situated to the <orientation>, 
+	 * where 'orientation' = {0 : top, 1 : right, 2 : bottom, 3 : left}.
+	 * @param orientation Location of the Cell to compare with ({0 : top, 1 : right, 2 : bottom, 3 : left})
+	 * @return True if there is a link, false otherwise.
+	 */
+	public boolean has_link_with(int orientation){
+		switch(orientation)
+		{
+		case 0:
+			return has_top_link();
+		case 1:
+			return has_right_link();
+		case 2:
+			return has_bottom_link();
+		case 3:
+			return has_left_link();
+		default:
+			return false;
+		}
+	}
+	
 	@Override
 	public void clockwiseNext() 
 	{
@@ -137,4 +175,29 @@ public class Cell extends ObservablePiece implements CellInterface
 	{
 		this.neighbors = neighbors;
 	}
+
+	/**
+	 * Check if there is a link to the top Cell.
+	 * @return True if there is a link, false otherwise.
+	 */
+	protected abstract boolean has_top_link();
+	
+	/**
+	 * Check if there is a link to the right Cell.
+	 * @return True if there is a link, false otherwise.
+	 */
+	protected abstract boolean has_right_link();
+	
+	/**
+	 * Check if there is a link to the bottom Cell.
+	 * @return True if there is a link, false otherwise.
+	 */
+	protected abstract boolean has_bottom_link();
+	
+	/**
+	 * Check if there is a link to the left Cell.
+	 * @return True if there is a link, false otherwise.
+	 */
+	protected abstract boolean has_left_link();
+	
 }

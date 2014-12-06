@@ -17,6 +17,10 @@ public class FireplaceCell extends Cell
 	{
 		super(o, p);
 		this.identifier = identifier;
+		connections[0] = has_top_link();
+		connections[1] = has_right_link();
+		connections[2] = has_bottom_link();
+		connections[3] = has_left_link();
 	}
 	
 	/**
@@ -26,5 +30,35 @@ public class FireplaceCell extends Cell
 	public int get_id()
 	{
 		return identifier;
+	}
+	
+	@Override
+	public void attach(SupplyObserver so) 
+	{
+		this.so = so;
+	}
+
+	@Override
+	public void notify_supply(boolean supplied, int cell_id) throws NoSupplyObserverException 
+	{
+		if(so == null)
+			throw new NoSupplyObserverException("no observer set");
+		so.update_supply(supplied, cell_id);
+	}
+	
+	protected boolean has_top_link(){
+		return orientation == Orientation.UP;
+	}
+	
+	protected boolean has_right_link(){
+		return orientation == Orientation.RIGHT;
+	}
+	
+	protected boolean has_bottom_link(){
+		return orientation == Orientation.DOWN;
+	}
+	
+	protected boolean has_left_link(){
+		return orientation == Orientation.LEFT;
 	}
 }
