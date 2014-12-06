@@ -5,10 +5,10 @@ package oose.logic.exceptions;
  * initialized
  * @author Servais Fabrice, Magera Floriane & Mormont Romain
  */
-public class NoSupplyObserverException extends Exception 
+public class NoPieceObserverException extends Exception 
 {
 	private static final long serialVersionUID = 1L;
 	
-	public NoSupplyObserverException() { super(); }
-	public NoSupplyObserverException(String s) { super(s); }
+	public NoPieceObserverException() { super(); }
+	public NoPieceObserverException(String s) { super(s); }
 }

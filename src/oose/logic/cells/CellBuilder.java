@@ -13,7 +13,7 @@ public class CellBuilder
 	private static CellBuilder instance = null; /** singleton instance of the class */
 	
 	private int fireplace_counter; /** the counter of fireplace cells */
-	private SupplyObserver so; /** the fireplace cell observer */ 
+	private PieceObserver po; /** the fireplace cell observer */ 
 	
 	/**
 	 * Constructs a CellBuilder object
@@ -21,7 +21,7 @@ public class CellBuilder
 	private CellBuilder()
 	{
 		fireplace_counter = 0;
-		so = null;
+		po = null;
 	}
 	
 	/**
@@ -49,9 +49,9 @@ public class CellBuilder
 	 * @param The supply observer
 	 * Must be called before any cell creation
 	 */
-	public void set_supply_observer(SupplyObserver so)
+	public void set_supply_observer(PieceObserver po)
 	{
-		this.so = so;
+		this.po = po;
 	}
 	
 	/**
@@ -84,7 +84,6 @@ public class CellBuilder
 			break;
 		case FIREPLACE:
 			FireplaceCell fc = new FireplaceCell(o,p,fireplace_counter++);
-			fc.attach(so); // attach the supply observer
 			c = fc;
 			break;
 		case GAS_ANGLED:
@@ -92,6 +91,8 @@ public class CellBuilder
 		case GAS:
 			c = new GasCell(o,p);
 		}
+		
+		c.attach(po); // attach the observer
 		
 		return c;
 	}

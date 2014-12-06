@@ -1,11 +1,10 @@
 package oose.logic;
 
 import java.io.FileNotFoundException;
-import java.util.Date;
 import java.util.Stack;
 
 import oose.interfaces.*;
-import oose.logic.cells.SupplyObserver;
+import oose.logic.cells.PieceObserver;
 import oose.logic.command.*;
 import oose.logic.exceptions.BadFileConfigurationException;
 import oose.logic.exceptions.BadPeriodException;
@@ -14,7 +13,7 @@ import oose.logic.exceptions.BadPeriodException;
  * A class for handling the Gastycoon game logic
  * @author Servais Fabrice, Magera Floriane & Mormont Romain
  */
-public class Logic implements LogicInterface, Observable, SupplyObserver
+public class Logic implements LogicInterface, Observable, PieceObserver
 {
 	private Observer observer = null;
 
@@ -37,6 +36,17 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 		board = parser.get_board();
 		command_stack = new Stack<Command>();
 		pn = get_notifier();
+	}
+	
+	/**
+	 * Return a periodic notifier object
+	 * @return The periodic notifier
+	 */
+	private PeriodicNotifier get_notifier()
+	{
+		try {
+			return new PeriodicNotifier(this, 1000);
+		} catch (BadPeriodException e) { return null; }
 	}
 	
 	@Override
@@ -138,18 +148,20 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 	@Override
 	public void update_supply(boolean supplied, int cell_id) 
 	{
+		/**
+		 * We can ignore the update from the cells (if it does not come from a fireplace)
+		 * because the update of supply can only be caused by a rotation so the cells will
+		 * eventually trigger a update_rotate call at some point
+		 */
+		if(cell_id == -1) 
+			return;
+		
 		this.supplied[cell_id] = supplied;
 	}
-	
-	/**
-	 * Return a periodic notifier object
-	 * @return The periodic notifier
-	 */
-	private PeriodicNotifier get_notifier()
-	{
-		try {
-			return new PeriodicNotifier(this, 1000);
-		} catch (BadPeriodException e) { return null; }
-	}
 
+	@Override
+	public void update_rotate() 
+	{
+		observer.update(true);
+	}
 }

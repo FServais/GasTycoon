@@ -2,12 +2,9 @@ package oose.logic.cells;
 
 import oose.interfaces.Orientation;
 import oose.interfaces.Piece;
-import oose.logic.exceptions.NoSupplyObserverException;
 
-public class FireplaceCell extends Cell implements ObservableSupply 
+public class FireplaceCell extends Cell
 {
-	
-	private SupplyObserver so = null; /** supply observer : */
 	private int identifier = -1;
 	
 	/**
@@ -30,19 +27,4 @@ public class FireplaceCell extends Cell implements ObservableSupply
 	{
 		return identifier;
 	}
-	
-	@Override
-	public void attach(SupplyObserver so) 
-	{
-		this.so = so;
-	}
-
-	@Override
-	public void notify_supply(boolean supplied, int cell_id) throws NoSupplyObserverException 
-	{
-		if(so == null)
-			throw new NoSupplyObserverException("no observer set");
-		so.update_supply(supplied, cell_id);
-	}
-
 }
