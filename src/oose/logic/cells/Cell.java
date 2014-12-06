@@ -10,7 +10,7 @@ import oose.interfaces.Piece;
  * Class representing a cell of the board
  * @author Servais Fabrice, Magera Floriane & Mormont Romain
  */
-public class Cell implements CellInterface 
+public class Cell implements CellInterface
 {
 	Orientation orientation; /** cell orientation */
 	Piece piece; /** cell piece */

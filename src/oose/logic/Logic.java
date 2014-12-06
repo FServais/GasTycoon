@@ -6,8 +6,7 @@ import java.util.Stack;
 
 import oose.interfaces.*;
 import oose.logic.cells.SupplyObserver;
-import oose.logic.command.Command;
-import oose.logic.command.Rotation;
+import oose.logic.command.*;
 import oose.logic.exceptions.BadFileConfigurationException;
 
 /**
@@ -117,10 +116,13 @@ public class Logic implements LogicInterface, Observable, SupplyObserver
 	public void reset() 
 	{
 		command_stack.clear();
-		board = parse.get_board();
+		board = parser.get_board();
 		nb_moves = 0;
+		
 		// notify the observer
 		notify_obs(true);
+		
+		start = System.currentTimeMillis();
 	}
 
 	@Override
