@@ -42,7 +42,7 @@ public class WinDialog extends JDialog implements ActionListener {
 	}
   
 	public void setScore(int score) {
-		message.setText(text + Integer.toBinaryString(score));
+		message.setText(text + Integer.toString(score));
 	}
 
 }
