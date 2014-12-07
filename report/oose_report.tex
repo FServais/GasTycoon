@@ -103,25 +103,15 @@ Academic year 2014-2015\\
 
 \section{Introduction}
 
-This report presents the solution we have developed for the INFO0063 course project. In the Section \ref{sec:diagrams}, we will first discuss about the diagrams we have chosen for describing the concept and design of the application. In the Section \ref{sec:patterns}, we will present the patterns we have included in our solution and, finally, in the Section \ref{sec:cls_hier}, we will say few words about our class hierarchy.
+This report presents the solution we have developed for the INFO0063 course project. In the Section \ref{sec:diagrams}, we will first discuss about the diagrams we have chosen for describing the concept and design of the application. Finally, in the Section \ref{sec:patterns}, we will present the patterns we have included in our solution.
 
 \section{Diagrams}
 \label{sec:diagrams}
-	
-	\subsection{Conceptual}
-
-At the conceptual level, we provide 2 diagrams of different kinds to show the whole program : class and activity diagrams.
-
-\paragraph{}
-
-The conceptual class diagram is shown \textsc{Figure} \ref{fig:concept-class}. It shows the 
-
-
-
+\subsection{Conceptual}
 \subsection{Design}
 We have chosen sequence and class diagrams to document our application design. 
 \subsubsection{Interfaces}
-The interfaces are given in the diagram in Figure \ref{fig:inter}.
+The interfaces are given in the diagram in Figure \ref{fig:inter}. A proposed \texttt{main()} method is given in the appendix 
 \subsubsection{Logic}
 The logic core class is the \texttt{Logic} class which implements the logic interface and is thus the main entry point of the logic subsystem. This class interacts with the following :
 \begin{itemize}
@@ -141,8 +131,11 @@ We have decided to document the following actions/algorithms with diagrams :
 	\item Handling and execution of the undo operation  : see Figure \ref{fig:undo}
 	\item Handling and execution of the reset operation : see Figure \ref{fig:reset}
 	\item Update of the supply state of each cell of the board : see Figure \ref{fig:sup_update}
+	\item Activity of the logic and the periodic notifier : see Figure \ref{fig:log_acti}
 \end{itemize}
+The periodic notifier is a class derived from the \texttt{java.lang.Thread} of which the main responsibility is to notify periodically (every second) the logic observer such that the observer updates its state (refresh the chronometer display).
 \section{Applied patterns}
+\label{sec:patterns}
 \subsection{Observer}
 The observer pattern is applied two times : 
 \begin{enumerate}
@@ -153,11 +146,11 @@ The first application of the pattern allows the UI to update its state when logi
 \begin{itemize}
 	\item \textit{AbstractObserver} : \texttt{Observer}
 	\item \textit{AbstractSubject} : \texttt{Observable}
-	\item \textit{ConcreteObserver} : \texttt{GUI}
+	\item \textit{ConcreteObserver} : \texttt{UI}
 	\item \textit{ConcreteSubject} : \texttt{Logic}
 \end{itemize}
 \paragraph{}
- This structure implies that the class that implements \texttt{LogicInterface} must be aware of any modification of the logic subsystem state in order to generate proper notification to the GUI. The structure of the interface is such that it is not always the case. Indeed, the \texttt{CellInterface} provides two methods for rotating the cells and thus changing the logic state. The UI can thus bypasses the \texttt{Logic} class which cannot be aware of this state modification and cannot trigger the update notification to the UI.
+ This structure implies that the class that implements \texttt{LogicInterface} must be aware of any modification of the logic subsystem state in order to generate proper notification to the UI. The structure of the interface is such that it is not always the case. Indeed, the \texttt{CellInterface} provides two methods for rotating the cells and thus changing the logic state. The UI can thus bypasses the \texttt{Logic} class which cannot be aware of this state modification and cannot trigger the update notification to the UI.
 \\ \\ 
 We thus have to develop a mechanism so that any cell is able to notify the logic that it receives a rotation request. To do so, we use the observer pattern again :\\
 \begin{itemize}
@@ -180,37 +173,32 @@ The interactions between the logic and the UI can be summarized into three types
 The command interface thus specifies two methods for executing and reversing the operation : \texttt{execute()} and \texttt{reverse()}. The advantage of this method is that extending the set of reversible operations is very easy and the implementation of the \texttt{undo} is independent of the actual action of the operation to reverse. 
 \subsection{Builder and singleton}
 The cells are relatively complex to build because they need to be fed with coordinates, a Piece enumeration value, an Orientation enumeration value, an observer,... To avoid duplicating the object construction logic over many location in the code, we have created a \texttt{CellBuilder} object which is responsible for creating the cells. Also, it is not necessary to have duplicate instance of this object. Therefore, we have used the singleton pattern for this class.
-\label{sec:patterns}
-\section{Class hierarchy}
-\label{sec:cls_hier}
 \section{Conclusion}
+\newpage
 \appendix
-\section{Conceptual}
-\subsection{Class diagrams}
-\begin{figure}[h]
-	\center
-	\includegraphics[angle=90,scale=0.8]{Conceptual-Class-diagram.png}
-	\caption{Conceptual class diagram}
-	\label{fig:concept-class}
-\end{figure}
-
-\subsection{Activity diagram}
-\begin{figure}[h]
-	\center
-	\includegraphics[angle=90,scale=0.9]{Conceptual-activity-diagram.png}
-	\caption{Conceptual activity diagram - Game}
-	\label{fig:concept-activity}
-\end{figure}
-
-\begin{figure}[h]
-	\center
-	\includegraphics[angle=90,scale=0.7]{Generate-board.png}
-	\caption{Conceptual sub-activity diagram - Generate board}
-	\label{fig:concept-generate-board}
-\end{figure}
+\section{Proposed main method}
+\label{apx:main}
+\begin{minipage}{0.75\linewidth}
+\begin{lstlisting}[caption={\texttt{main()}}]
+public static void main(String[] args)
+{
+	if(args.length != 1)
+	{
+		System.err.println("Missing argument : configuration file name");
+		return ;
+	}
+	
+	Logic logic = new Logic(args[0]);
+	GUI gui = new GUI(logic);
+	logic.attach(gui);
+	
+	gui.start();
+}
+\end{lstlisting}
+\end{minipage}
 
 \section{Design}
-\subsection{Class diagrams}
+\subsection{Diagrams}
 \begin{figure}[h]
 	\center
 	\includegraphics[angle=90,scale=1]{interfaces.png}
@@ -223,41 +211,46 @@ The cells are relatively complex to build because they need to be fed with coord
 	\caption{Logic core}
 	\label{fig:logic}
 \end{figure}
-\begin{figure}
+\begin{figure}[h]
 	\center
 	\includegraphics[angle=90,scale=1]{cells.png}
 	\caption{Cells}
 	\label{fig:cells}
 \end{figure}
-\subsection{Sequence diagrams}
-\begin{figure}
+\begin{figure}[h]
 	\center
 	\includegraphics[angle=90,scale=1]{supply_update.png}
 	\caption{Supply update}
 	\label{fig:sup_update}
 \end{figure}
-\begin{figure}
+\begin{figure}[h]
 	\center
 	\includegraphics[angle=90,scale=1]{rotation_request.png}
 	\caption{Rotation request}
 	\label{fig:rot_request}
 \end{figure}
-\begin{figure}
+\begin{figure}[h]
 	\center
 	\includegraphics[angle=90,scale=1]{rotation.png}
 	\caption{Rotation}
 	\label{fig:rotation}
 \end{figure}
-\begin{figure}
+\begin{figure}[h]
 	\center
 	\includegraphics[angle=90,scale=1]{reset.png}
 	\caption{Reset}
 	\label{fig:reset}
 \end{figure}
-\begin{figure}
+\begin{figure}[h]
 	\center
 	\includegraphics[angle=90,scale=1]{undo.png}
 	\caption{Undo}
 	\label{fig:undo}
+\end{figure}
+\begin{figure}[h]
+	\center
+	\includegraphics[angle=90,scale=1]{logic_activity.png}
+	\caption{Logic activity}
+	\label{fig:log_acti}
 \end{figure}
 \end{document}
