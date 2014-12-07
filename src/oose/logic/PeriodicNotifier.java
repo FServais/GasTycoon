@@ -65,4 +65,15 @@ public class PeriodicNotifier extends Thread
 	{
 		return start_time;
 	}
+	
+	/**
+	 * Returns true if the periodic notifier was started mode than one hour ago
+	 * @return True if started more than one hour ago, galse otherwise
+	 */
+	public synchronized boolean more_than_hour()
+	{
+		long now = System.currentTimeMillis();
+		
+		return ((now - start_time) / 3600000) > 0;
+	}
 }

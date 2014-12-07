@@ -52,7 +52,7 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 
 	public void get_notified(Coord c, boolean clockwise) 
 	{
-		
+		rotate(c.row, c.col, clockwise);
 	}
 	
 	/**
@@ -103,8 +103,13 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	@Override
 	public int getScore() 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		int non_empty = board.count_non_empty_cells();
+		
+		if(pn.more_than_hour())
+			return 0;
+
+		return Math.min(0, non_empty * 4 - nb_moves) + 
+				(Math.min(0, 60 - getChronoMinutes()) / 60) * non_empty * 4;
 	}
 
 	@Override

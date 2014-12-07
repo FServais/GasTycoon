@@ -66,8 +66,8 @@ public class Parser
 			// read board dimensions
 			String[] wh = br.readLine().split("\\s");
 			
-			width = Integer.parseInt(wh[0]);
-			height = Integer.parseInt(wh[1]);
+			height = Integer.parseInt(wh[0]);
+			width = Integer.parseInt(wh[1]);
 			
 			init_arrays();
 			
@@ -87,7 +87,7 @@ public class Parser
 				for(int j = 0; j < width; ++j)
 				{
 					String piece_s = splitted_line[i].substring(0,1), 
-						   orient_s = splitted_line[i].substring(1,1);
+						   orient_s = splitted_line[i].substring(1,2);
 					
 					pieces[i][j] = builder.get_piece(Integer.parseInt(piece_s));
 					orientations[i][j] = builder.get_orient(Integer.parseInt(orient_s));

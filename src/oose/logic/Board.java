@@ -111,4 +111,20 @@ public class Board
 	{	
 		return board;
 	}
+	
+	/**
+	 * Count the number of non empty cell in the board
+	 * @return The number of non empty cell 
+	 */
+	public int count_non_empty_cells()
+	{
+		int count = 0;
+		
+		for(Cell[] row : board)
+			for(Cell c : row)
+				if(!c.is_empty())
+					count++;
+		
+		return count;	
+	}
 }

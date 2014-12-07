@@ -316,4 +316,10 @@ public class Cell extends RotationRequestNotifier implements CellInterface
 	{
 		return piece == Piece.GAS || piece == Piece.GAS_ANGLED || piece == Piece.GAS_T;
 	}
+	
+	/**
+	 * Check whether the cell is an empty cell
+	 * @return True if the cell is an empty cell
+	 */
+	public boolean is_empty() { return piece == Piece.EMPTY; }
 }
