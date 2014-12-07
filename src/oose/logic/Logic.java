@@ -150,6 +150,9 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	@Override
 	public void undo() 
 	{
+		if(command_stack.empty())
+			return;
+		
 		Command rot = command_stack.pop();
 		rot.revert();
 		nb_moves -= 1;
