@@ -30,8 +30,8 @@ public class Parser
 	 */
 	public Parser(String filepath) throws FileNotFoundException, BadFileConfigurationException 
 	{
-		parse(filepath);
 		builder = CellBuilder.get_instance();
+		parse(filepath);
 	}
 
 	/**
