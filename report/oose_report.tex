@@ -1,6 +1,6 @@
 \documentclass[a4paper,11pt]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[frenchb]{babel}
+\usepackage[english]{babel}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsthm}
@@ -107,7 +107,27 @@ This report presents the solution we have developed for the INFO0063 course proj
 
 \section{Diagrams}
 \label{sec:diagrams}
-\subsection{Conceptual}
+
+	
+	\subsection{Conceptual}
+
+At the conceptual level, we provide 2 diagrams of different kinds to show the whole program : class and activity diagrams.
+
+\paragraph{}
+
+The conceptual class diagram is shown \textsc{Figure} \ref{fig:concept-class}. It shows the main classes that compose the game : \texttt{Logic} and \texttt{GUI}. The GUI have some basic components which show briefly what the users will see, and some methods explaining the role of the GUI (which is displaying information). The logic keeps the information concerning the state of the game, at a higher level in this diagram. Here, \texttt{Logic} is acting like as an interface between the state and the GUI. We can also see that the state of game is composed of a \texttt{Board} containing \texttt{Cell}'s of different kind. Methods are also provided to change and update the state of the game.
+
+\paragraph{}
+
+The conceptual activity diagram is shown \textsc{Figure} \ref{fig:concept-activity} and \ref{fig:concept-generate-board}. It represents the proceedings of the program during a game. The first part concerns the creation of the board, it is shown on the sub-activity diagram \textsc{Figure} \ref{fig:concept-generate-board}. The file is simply parsed in order to create \texttt{Cell}'s to create a \texttt{Board}. The rest of the main diagram shows the reaction following an action of the user : 
+\begin{itemize}
+	\item Click on a cell : the board is recomputed and one checks if it is a winning move.
+	\item Click on the undo button : cancel the last action.
+	\item Click on the reset button : restart from the beginning.
+	\item Quit : simply close the program.
+\end{itemize}
+
+
 \subsection{Design}
 We have chosen sequence and class diagrams to document our application design. 
 \subsubsection{Interfaces}
@@ -142,7 +162,7 @@ The observer pattern is applied two times :
 	\item The logic is observed by the UI through the common interface (interfaces \texttt{Observable} and \texttt{Observer})
 	\item The cells are observed by the Logic
 \end{enumerate}
-The first application of the pattern allows the UI to update its state when logic updates its own leading to more independence between the subsystems. We have : \\ \\
+The first application of the pattern allows the UI to update its state when logic updates its own leading to more independence between the subsystems. We have : 
 \begin{itemize}
 	\item \textit{AbstractObserver} : \texttt{Observer}
 	\item \textit{AbstractSubject} : \texttt{Observable}
@@ -152,7 +172,7 @@ The first application of the pattern allows the UI to update its state when logi
 \paragraph{}
  This structure implies that the class that implements \texttt{LogicInterface} must be aware of any modification of the logic subsystem state in order to generate proper notification to the UI. The structure of the interface is such that it is not always the case. Indeed, the \texttt{CellInterface} provides two methods for rotating the cells and thus changing the logic state. The UI can thus bypasses the \texttt{Logic} class which cannot be aware of this state modification and cannot trigger the update notification to the UI.
 \\ \\ 
-We thus have to develop a mechanism so that any cell is able to notify the logic that it receives a rotation request. To do so, we use the observer pattern again :\\
+We thus have to develop a mechanism so that any cell is able to notify the logic that it receives a rotation request. To do so, we use the observer pattern again :
 \begin{itemize}
 	\item \textit{AbstractObserver} : \texttt{RotationRequestObserver}
 	\item \textit{AbstractSubject} : \texttt{RotationRequestNotifier}
@@ -162,7 +182,7 @@ We thus have to develop a mechanism so that any cell is able to notify the logic
 \paragraph{}
 The cells are observed by the logic main class and communicates its coordinates and the rotation direction through the notify call. The logic class can then execute the rotation and notifies the UI of the modification.
 \subsection{Command}
-The interactions between the logic and the UI can be summarized into three types of request : undo, reset and rotate.  The undo and reset operations are directly implemented in the methods of the \texttt{Logic} class. The rotate operation is a little more complicated because it should be reversible when the user wants to undo one of its move. The idea is thus to encapsulate this operation and its reverse into an object : this is the \textbf{command} pattern. In this case, there is a slight variation compared the pattern explained during the lecture. Indeed, the \textit{Invoker} and the \textit{Client} are the same class : \\
+The interactions between the logic and the UI can be summarized into three types of request : undo, reset and rotate.  The undo and reset operations are directly implemented in the methods of the \texttt{Logic} class. The rotate operation is a little more complicated because it should be reversible when the user wants to undo one of its move. The idea is thus to encapsulate this operation and its reverse into an object : this is the \textbf{command} pattern. In this case, there is a slight variation compared the pattern explained during the lecture. Indeed, the \textit{Invoker} and the \textit{Client} are the same class : 
 \begin{itemize}
 	\item \textit{Client}, \textit{Invoker} : \texttt{Logic}
 	\item \textit{Command} : \texttt{Command}
