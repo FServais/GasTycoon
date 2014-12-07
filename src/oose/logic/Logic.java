@@ -132,22 +132,7 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	@Override
 	public boolean win() 
 	{
-		/*
-		boolean win = true;
-		
-		for(boolean fp_supplied : supplied)
-			win &= fp_supplied;
-		
-		return win;
-		*/
-		// Temp
-		Vector<Cell> f = board.get_fireplaces();
-		boolean win = true;
-		
-		for(Cell c : f)
-			win &= c.isSupplied();
-		
-		return win;
+		return board.are_fireplace_supplied();
 	}
 
 	@Override
