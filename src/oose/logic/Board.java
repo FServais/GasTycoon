@@ -36,6 +36,8 @@ public class Board
 					gases.add(c);
 			}
 		}
+		
+		update_supply();
 	}
 	
 	// Temp

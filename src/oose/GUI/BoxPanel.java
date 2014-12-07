@@ -31,6 +31,7 @@ class BoxPanel extends JPanel {
     public void setBoxImage(CellInterface cell) {
     	BoxImageLibrary librairy = BoxImageLibrary.getUniqueInstance();
     	image = librairy.selectBoxImage(cell);
+    	repaint();
     }
     
     public int getRow() {
