@@ -67,7 +67,7 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	 */
 	private void rotate(int i, int j, boolean clockwise)
 	{
-		if(is_game_over())
+		if(is_game_over()) // prevent user from rotating when the game is over
 			return; 
 		
 		if(!game_started)
@@ -80,6 +80,9 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		rot.execute();
 		command_stack.push(rot);
 		nb_moves += 1;
+		
+		if(is_game_over()) // if the rotation lead to victory, this stop the periodic notification
+			return;
 
 		synchronized(this) { notify_obs(true); }
 	}
