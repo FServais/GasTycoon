@@ -2,8 +2,10 @@ package oose.logic;
 
 import java.io.FileNotFoundException;
 import java.util.Stack;
+import java.util.Vector;
 
 import oose.interfaces.*;
+import oose.logic.cells.Cell;
 import oose.logic.cells.RotationRequestObserver;
 import oose.logic.command.*;
 import oose.logic.exceptions.BadFileConfigurationException;

@@ -90,12 +90,12 @@ public class Cell extends RotationRequestNotifier implements CellInterface
 		case PIPELINE_T:
 			connections[0] = true;
 			connections[1] = true;
-			connections[2] = true;
+			connections[3] = true;
 			break;
 			
 		case PIPELINE:
-			connections[0] = true;
-			connections[2] = true;
+			connections[1] = true;
+			connections[3] = true;
 			break;
 			
 		default: // Empty piece don't need any rotation
@@ -156,6 +156,11 @@ public class Cell extends RotationRequestNotifier implements CellInterface
 	{
 		try 
 		{
+			if(this.piece == Piece.PIPELINE)
+			{
+				if(supplied)
+					System.out.println("This is supplied");
+			}
 			if(supplied) // cell is already supplied => there is a cycle and we can stop
 				return;
 			

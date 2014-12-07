@@ -36,6 +36,13 @@ public class Board
 					gases.add(c);
 			}
 		}
+		
+		update_supply();
+	}
+	
+	// Temp
+	public Vector<Cell> get_fireplaces(){
+		return fireplaces;
 	}
 	
 	/**
