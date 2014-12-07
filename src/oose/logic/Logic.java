@@ -114,12 +114,14 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 
 	@Override
 	public int getScore() 
-	{
+	{	
 		long start = pn.get_start_time(),
 			 now = System.currentTimeMillis();
 		
+		if(start == -1)
+			return 0;
+		
 		int six_seconds = (int) (now - start) / 6000;
-
 		return nb_moves * 5 + six_seconds;
 	}
 
@@ -128,6 +130,10 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	{
 		long now = System.currentTimeMillis(), 
 			 start = pn.get_start_time();
+		
+		if(start == -1)
+			return 0;
+		
 		return (int) ((now - start) / 1000) % 60;
 	}
 
@@ -136,6 +142,10 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	{
 		long now = System.currentTimeMillis(), 
 			 start = pn.get_start_time();
+		
+		if(start == -1)
+			return 0;
+		
 		return (int) ((now - start) / 60000) % 60;
 	}
 
@@ -173,11 +183,11 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	
 		pn.stop_notifier(); // stop previous chrono
 		
-		// notify the observer
-		synchronized(this) { notify_obs(true); }
-		
 		pn = get_notifier();
 		game_started = false;
+		
+		// notify the observer
+		synchronized(this) { notify_obs(true); }
 	}
 
 	/**
