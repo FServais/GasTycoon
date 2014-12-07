@@ -115,8 +115,8 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		if(pn.more_than_hour())
 			return 0;
 
-		return Math.min(0, non_empty * 4 - nb_moves) + 
-				(Math.min(0, 60 - getChronoMinutes()) / 60) * non_empty * 4;
+		return Math.max(0, non_empty * 4 - nb_moves) + 
+				(Math.max(0, 60 - getChronoMinutes()) / 60) * non_empty * 4;
 	}
 
 	@Override
