@@ -127,4 +127,18 @@ public class Board
 		
 		return count;	
 	}
+
+	/**
+	 * Check whether all the fireplace are supplied
+	 * @return True if all the fireplace are supplied, false otherwise
+	 */
+	public boolean are_fireplace_supplied() 
+	{	
+		boolean supplied = true;
+		
+		for(Cell c : fireplaces)
+			supplied &= c.isSupplied();
+		
+		return supplied;
+	}
 }
