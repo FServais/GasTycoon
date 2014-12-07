@@ -158,6 +158,8 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		Command rot = command_stack.pop();
 		rot.revert();
 		nb_moves -= 1;
+		
+		synchronized(this) { notify_obs(true); }
 	}
 
 	@Override
