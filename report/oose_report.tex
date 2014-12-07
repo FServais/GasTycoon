@@ -98,6 +98,8 @@ Academic year 2014-2015\\
 }
 \rule{1\linewidth}{1px}
 \newpage
+\tableofcontents
+\newpage
 
 \section{Introduction}
 
@@ -109,16 +111,16 @@ This report presents the solution we have developed for the INFO0063 course proj
 \subsection{Design}
 We have chosen sequence and class diagrams to document our application design. 
 \subsubsection{Interfaces}
-The interfaces 
+The interfaces are given in the diagram in Figure \ref{fig:inter}.
 \subsubsection{Logic}
-The logic core class is the \texttt{Logic} class which implements the logic interface and is thus the entry point of the logic subsystem. This class does not contain a lot of responsibilities. Indeed, these are delegated to other classes : 
+The logic core class is the \texttt{Logic} class which implements the logic interface and is thus the main entry point of the logic subsystem. The others entry-points are the cells. This class interacts with the following :
 \begin{itemize}
 	\item reversible actions : classes \texttt{Stack<Command>}, \texttt{Command} and \texttt{Rotation} 
 	\item game board : classes \texttt{Board} and \texttt{Cell}
 	\item configuration file parsing : class \texttt{Parser}
 	\item chronometer : class \texttt{PeriodicNotifier}
 \end{itemize}
-These components are described in the diagram in Figure \ref{}
+These components are described in the diagram in Figure.
 \subsubsection{Cells}
 As board cell
 \subsubsection{Algorithms and data structures}
@@ -130,4 +132,56 @@ As board cell
 \section{Class hierarchy}
 \label{sec:cls_hier}
 \section{Conclusion}
+\appendix
+\section{Design}
+\subsection{Class diagrams}
+\begin{figure}[h]
+	\center
+	\includegraphics[angle=90,scale=1]{interfaces.png}
+	\caption{Interfaces}
+	\label{fig:inter}
+\end{figure}
+\begin{figure}[h]
+	\center
+	\includegraphics[angle=90,scale=1]{logic.png}
+	\caption{Logic core}
+	\label{fig:logic}
+\end{figure}
+\begin{figure}
+	\center
+	\includegraphics[angle=90,scale=1]{cells.png}
+	\caption{Cells}
+	\label{fig:cells}
+\end{figure}
+\subsection{Sequence diagrams}
+\begin{figure}
+	\center
+	\includegraphics[angle=90,scale=1]{supply_update.png}
+	\caption{Supply update}
+	\label{fig:sup_update}
+\end{figure}
+\begin{figure}
+	\center
+	\includegraphics[angle=90,scale=1]{rotation_request.png}
+	\caption{Rotation request}
+	\label{fig:rot_request}
+\end{figure}
+\begin{figure}
+	\center
+	\includegraphics[angle=90,scale=1]{rotation.png}
+	\caption{Rotation}
+	\label{fig:rotation}
+\end{figure}
+\begin{figure}
+	\center
+	\includegraphics[angle=90,scale=1]{reset.png}
+	\caption{Reset}
+	\label{fig:reset}
+\end{figure}
+\begin{figure}
+	\center
+	\includegraphics[angle=90,scale=1]{undo.png}
+	\caption{Undo}
+	\label{fig:undo}
+\end{figure}
 \end{document}
