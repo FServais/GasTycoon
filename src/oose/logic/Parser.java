@@ -86,8 +86,8 @@ public class Parser
 				}
 				for(int j = 0; j < width; ++j)
 				{
-					String piece_s = splitted_line[i].substring(0,1), 
-						   orient_s = splitted_line[i].substring(1,2);
+					String piece_s = splitted_line[j].substring(0,1), 
+						   orient_s = splitted_line[j].substring(1,2);
 					
 					pieces[i][j] = builder.get_piece(Integer.parseInt(piece_s));
 					orientations[i][j] = builder.get_orient(Integer.parseInt(orient_s));
