@@ -38,6 +38,11 @@ public class Board
 		}
 	}
 	
+	// Temp
+	public Vector<Cell> get_fireplaces(){
+		return fireplaces;
+	}
+	
 	/**
 	 * Initialize the neighbors of all the cells in the board
 	 */

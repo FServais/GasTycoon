@@ -3,3 +3,7 @@
 .settings/org.eclipse.jdt.core.prefs
 bin/*
 diagrams/gastycoon.vpp*
+src/oose/GUI/GUI.class
+src/oose/GUI/Logic.class
+src/oose/GUI/Main.class
+src/oose/GUI/MainFrame.class

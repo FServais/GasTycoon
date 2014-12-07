@@ -2,8 +2,10 @@ package oose.logic;
 
 import java.io.FileNotFoundException;
 import java.util.Stack;
+import java.util.Vector;
 
 import oose.interfaces.*;
+import oose.logic.cells.Cell;
 import oose.logic.cells.RotationRequestObserver;
 import oose.logic.command.*;
 import oose.logic.exceptions.BadFileConfigurationException;
@@ -18,7 +20,6 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	private Observer observer = null;
 
 	private int nb_moves = 0; // number of moves of the player
-	private boolean[] supplied = null; // array of boolean specifying if the fireplace cells are supplied
 	private Board board = null; // the game board
 	private Parser parser = null; // initial config file parser
 	private Stack<Command> command_stack = null; // store the previous commands of the user
@@ -131,10 +132,20 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	@Override
 	public boolean win() 
 	{
+		/*
 		boolean win = true;
 		
 		for(boolean fp_supplied : supplied)
 			win &= fp_supplied;
+		
+		return win;
+		*/
+		// Temp
+		Vector<Cell> f = board.get_fireplaces();
+		boolean win = true;
+		
+		for(Cell c : f)
+			win &= c.isSupplied();
 		
 		return win;
 	}
