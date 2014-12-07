@@ -18,7 +18,6 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	private Observer observer = null;
 
 	private int nb_moves = 0; // number of moves of the player
-	private boolean[] supplied = null; // array of boolean specifying if the fireplace cells are supplied
 	private Board board = null; // the game board
 	private Parser parser = null; // initial config file parser
 	private Stack<Command> command_stack = null; // store the previous commands of the user
@@ -149,6 +148,9 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	@Override
 	public void undo() 
 	{
+		if(command_stack.empty())
+			return;
+		
 		Command rot = command_stack.pop();
 		rot.revert();
 		nb_moves -= 1;
