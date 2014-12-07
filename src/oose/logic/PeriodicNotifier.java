@@ -29,6 +29,7 @@ public class PeriodicNotifier extends Thread
 		this.period = period;
 		this.observable = o;
 		this.stop = false;
+		this.start_time = -1;
 	}
 	
 	public void run()
@@ -59,7 +60,7 @@ public class PeriodicNotifier extends Thread
 	
 	/**
 	 * Return the time when the periodic notifier started to execute
-	 * @return The execution start time
+	 * @return The execution start time, -1 if the game has not started yet
 	 */
 	public synchronized long get_start_time()
 	{
