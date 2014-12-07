@@ -79,10 +79,9 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		command_stack.push(rot);
 		nb_moves += 1;
 		
-		if(is_game_over()) // if the rotation lead to victory, this stop the periodic notification
-			return;
-
 		synchronized(this) { notify_obs(true); }
+		
+		is_game_over(); // if the rotation lead to victory, this stop the periodic notification
 	}
 	
 	@Override
@@ -114,13 +113,12 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	@Override
 	public int getScore() 
 	{
-		int non_empty = board.count_non_empty_cells();
+		long start = pn.get_start_time(),
+			 now = System.currentTimeMillis();
 		
-		if(pn.more_than_hour())
-			return 0;
+		int six_seconds = (int) (now - start) / 6000;
 
-		return Math.max(0, non_empty * 4 - nb_moves) + 
-				(Math.max(0, 60 - getChronoMinutes()) / 60) * non_empty * 4;
+		return nb_moves * 5 + six_seconds;
 	}
 
 	@Override
