@@ -89,11 +89,10 @@ public class BoxImageLibrary {
 				indx = 36;
 				if(c.isSupplied())
 					indx += 2;
-				if(orientation.equals(Orientation.RIGHT))
+				if(orientation.equals(Orientation.RIGHT) || orientation.equals(Orientation.LEFT))
 					return boxImages[indx];
-				else if(orientation.equals(Orientation.UP))
+				else if((orientation.equals(Orientation.UP) || orientation.equals(Orientation.DOWN)))
 					return boxImages[indx+1];
-				break;
 			case EMPTY:
 				return boxImages[40];
 				
