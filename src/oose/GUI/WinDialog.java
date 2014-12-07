@@ -34,7 +34,6 @@ public class WinDialog extends JDialog implements ActionListener {
 	    getContentPane().add(buttonPane, BorderLayout.SOUTH);
 	    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	    pack(); 
-	    setVisible(true);
 	}
   
 	public void actionPerformed(ActionEvent e) {
