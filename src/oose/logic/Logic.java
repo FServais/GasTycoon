@@ -23,6 +23,7 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	private Parser parser = null; // initial config file parser
 	private Stack<Command> command_stack = null; // store the previous commands of the user
 	private PeriodicNotifier pn; // the periodic notifier for notifying chronometer update
+	private boolean game_started; // true if the game was started (i.e. the firest rotation was performed)
 	
 	/**
 	 * Construct a logic object
@@ -36,6 +37,7 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		board = parser.get_board();
 		command_stack = new Stack<Command>();
 		pn = get_notifier();
+		game_started = false;
 	}
 	
 	/**
@@ -48,8 +50,8 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 			return new PeriodicNotifier(this, 1000);
 		} catch (BadPeriodException e) { return null; }
 	}
-	
-
+	 
+	@Override
 	public void get_notified(Coord c, boolean clockwise) 
 	{
 		rotate(c.row, c.col, clockwise);
@@ -64,6 +66,12 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	 */
 	private void rotate(int i, int j, boolean clockwise)
 	{
+		if(!game_started)
+		{	
+			pn.start();
+			game_started = true;
+		}	
+		
 		Rotation rot = new Rotation(i,j,clockwise,board);
 		rot.execute();
 		command_stack.push(rot);
@@ -76,8 +84,6 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	public void attach(Observer observer) 
 	{	
 		this.observer = observer;
-		// the game starts : starts the chrono
-		pn.start();
 	}
 
 	@Override
@@ -154,13 +160,13 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		command_stack.clear();
 		board = parser.get_board();
 		nb_moves = 0;
-		
+	
 		pn.stop_notifier(); // stop previous chrono
 		
 		// notify the observer
 		synchronized(this) { notify_obs(true); }
 		
 		pn = get_notifier();
-		pn.start(); // restart chronometer
+		game_started = false;
 	}
 }
