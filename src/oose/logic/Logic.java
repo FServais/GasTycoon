@@ -65,6 +65,9 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	 */
 	private void rotate(int i, int j, boolean clockwise)
 	{
+		if(is_game_over())
+			return; 
+		
 		if(!game_started)
 		{	
 			pn.start();
@@ -75,7 +78,7 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		rot.execute();
 		command_stack.push(rot);
 		nb_moves += 1;
-		
+
 		synchronized(this) { notify_obs(true); }
 	}
 	
@@ -113,8 +116,8 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		if(pn.more_than_hour())
 			return 0;
 
-		return Math.min(0, non_empty * 4 - nb_moves) + 
-				(Math.min(0, 60 - getChronoMinutes()) / 60) * non_empty * 4;
+		return Math.max(0, non_empty * 4 - nb_moves) + 
+				(Math.max(0, 60 - getChronoMinutes()) / 60) * non_empty * 4;
 	}
 
 	@Override
@@ -148,7 +151,7 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 	@Override
 	public void undo() 
 	{
-		if(command_stack.empty())
+		if(is_game_over() || command_stack.empty())
 			return;
 		
 		Command rot = command_stack.pop();
@@ -170,5 +173,19 @@ public class Logic implements LogicInterface, Observable, RotationRequestObserve
 		
 		pn = get_notifier();
 		game_started = false;
+	}
+
+	/**
+	 * Check if the game is over and if it is deactivate the notifier
+	 * @return True if the game is over, false otherwise
+	 */
+	private boolean is_game_over()
+	{
+		boolean win = win();
+
+		if(win)
+			pn.stop_notifier();
+
+		return win;
 	}
 }
