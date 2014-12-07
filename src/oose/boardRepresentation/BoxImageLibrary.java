@@ -26,7 +26,7 @@ public class BoxImageLibrary {
 			boxImages = new BoxImage[41];
 			
 			for(int i=0;i<41;++i){
-				boxImages[i] = new BoxImage(ImageIO.read(new File("boxes/"+cellImagePath[i]+".png")));
+				boxImages[i] = new BoxImage(ImageIO.read(new File("boxes/"+cellImagePath[i])));
 			}
 		} catch (IOException e) {
 			System.err.println("Error when reading cells' picture");
