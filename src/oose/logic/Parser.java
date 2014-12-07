@@ -40,13 +40,11 @@ public class Parser
 	 */
 	public Board get_board() 
 	{
-		builder.reset();
-		
 		Cell[][] cell_array = new Cell[height][width];
 		
 		for(int i = 0; i < height; ++i)
 			for(int j = 0; j < width; ++j)
-				cell_array[i][j] = builder.build_cell(orientations[i][j], pieces[i][j]);
+				cell_array[i][j] = builder.build_cell(orientations[i][j], pieces[i][j], i, j);
 		
 		return new Board(cell_array);
 	}

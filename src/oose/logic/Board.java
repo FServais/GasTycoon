@@ -4,12 +4,12 @@ import java.util.Vector;
 
 import oose.interfaces.CellInterface;
 import oose.logic.cells.Cell;
-import oose.logic.cells.GasCell;
 
 public class Board 
 {
 	private Cell[][] board; // board internal representation
-	private Vector<Cell> gas;
+	private Vector<Cell> gases;
+	private Vector<Cell> fireplaces;
 	
 	/**
 	 * Construct a board
@@ -18,13 +18,22 @@ public class Board
 	public Board(Cell[][] board)
 	{
 		this.board = board;
+		
+		gases = new Vector<Cell>();
+		fireplaces = new Vector<Cell>();
+		
+		// set the neigbords of the cells
 		set_neighbors();
 		
-		gas = new Vector<Cell>();
-		for(Cell[] row : board){
-			for(Cell c : row){
-				if(c instanceof GasCell)
-					gas.add(c);
+		// store gas and fireplace cells
+		for(Cell[] row : board)
+		{
+			for(Cell c : row)
+			{
+				if(c.is_fireplace())
+					fireplaces.add(c);
+				else if(c.is_gas())
+					gases.add(c);
 			}
 		}
 	}
@@ -34,8 +43,10 @@ public class Board
 	 */
 	private void set_neighbors()
 	{
-		for(int i = 0 ; i < board.length ; ++i){
-			for(int j = 0 ; j < board[i].length ; ++j){
+		for(int i = 0 ; i < board.length ; ++i)
+		{
+			for(int j = 0 ; j < board[i].length ; ++j)
+			{
 				Cell[] neighb = new Cell[4];
 				// Top
 				if(i == 0)
@@ -75,23 +86,29 @@ public class Board
 		// Set all supply variable to false
 		for(Cell[] row : board)
 			for(Cell c : row)
-				c.set_supplied(false);
+				c.set_unsupplied();
 		
-		for(Cell c : gas)
-				c.update_supplied();
-		
+		// propagate supply from the gas cell
+		for(Cell c : gases)
+			c.start_supply();
 	}
 	
 	/**
-	 * 
+	 * Perform a clockwise rotation of the cell at position (i,j) if clockwise is true, 
+	 * a counter-clockwise rotation otherwise
 	 */
 	public void rotate(int i, int j, boolean clockwise)
 	{
 		board[i][j].rotate(clockwise);
+		update_supply();
 	}
 
-	public CellInterface[][] get_array() {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Return the cell board
+	 * @return THe cell board
+	 */
+	public CellInterface[][] get_array() 
+	{	
+		return board;
 	}
 }

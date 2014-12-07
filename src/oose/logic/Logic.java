@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.Stack;
 
 import oose.interfaces.*;
-import oose.logic.cells.PieceObserver;
+import oose.logic.cells.RotationRequestObserver;
 import oose.logic.command.*;
 import oose.logic.exceptions.BadFileConfigurationException;
 import oose.logic.exceptions.BadPeriodException;
@@ -13,7 +13,7 @@ import oose.logic.exceptions.BadPeriodException;
  * A class for handling the Gastycoon game logic
  * @author Servais Fabrice, Magera Floriane & Mormont Romain
  */
-public class Logic implements LogicInterface, Observable, PieceObserver
+public class Logic implements LogicInterface, Observable, RotationRequestObserver
 {
 	private Observer observer = null;
 
@@ -47,6 +47,29 @@ public class Logic implements LogicInterface, Observable, PieceObserver
 		try {
 			return new PeriodicNotifier(this, 1000);
 		} catch (BadPeriodException e) { return null; }
+	}
+	
+
+	public void get_notified(Coord c, boolean clockwise) 
+	{
+		
+	}
+	
+	/**
+	 * Perform the rotation of the cell (i,j) 
+	 * @param i The row index
+	 * @param j The col index
+	 * @param clockwise True for clockwise, false for counter-clockwise
+	 * The command_stack, number of moves are updated and the observer is notified
+	 */
+	private void rotate(int i, int j, boolean clockwise)
+	{
+		Rotation rot = new Rotation(i,j,clockwise,board);
+		rot.execute();
+		command_stack.push(rot);
+		nb_moves += 1;
+		
+		synchronized(this) { notify_obs(true); }
 	}
 	
 	@Override
@@ -114,12 +137,7 @@ public class Logic implements LogicInterface, Observable, PieceObserver
 	@Override
 	public void rotate(int i, int j) 
 	{
-		Rotation rot = new Rotation(i,j,board);
-		rot.execute();
-		command_stack.push(rot);
-		nb_moves += 1;
-		
-		synchronized(this) { notify_obs(true); }
+		rotate(i,j,true);
 	}
 
 	@Override
@@ -127,6 +145,7 @@ public class Logic implements LogicInterface, Observable, PieceObserver
 	{
 		Command rot = command_stack.pop();
 		rot.revert();
+		nb_moves -= 1;
 	}
 
 	@Override
@@ -136,32 +155,12 @@ public class Logic implements LogicInterface, Observable, PieceObserver
 		board = parser.get_board();
 		nb_moves = 0;
 		
-		pn.stop_notifier();
+		pn.stop_notifier(); // stop previous chrono
 		
 		// notify the observer
 		synchronized(this) { notify_obs(true); }
 		
 		pn = get_notifier();
 		pn.start(); // restart chronometer
-	}
-
-	@Override
-	public void update_supply(boolean supplied, int cell_id) 
-	{
-		/**
-		 * We can ignore the update from the cells (if it does not come from a fireplace)
-		 * because the update of supply can only be caused by a rotation so the cells will
-		 * eventually trigger a update_rotate call at some point
-		 */
-		if(cell_id == -1) 
-			return;
-		
-		this.supplied[cell_id] = supplied;
-	}
-
-	@Override
-	public void update_rotate() 
-	{
-		observer.update(true);
 	}
 }

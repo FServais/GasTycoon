@@ -5,10 +5,10 @@ package oose.logic.exceptions;
  * initialized
  * @author Servais Fabrice, Magera Floriane & Mormont Romain
  */
-public class NoPieceObserverException extends Exception 
+public class NoRotationRequestObserverException extends Exception 
 {
 	private static final long serialVersionUID = 1L;
 	
-	public NoPieceObserverException() { super(); }
-	public NoPieceObserverException(String s) { super(s); }
+	public NoRotationRequestObserverException() { super(); }
+	public NoRotationRequestObserverException(String s) { super(s); }
 }

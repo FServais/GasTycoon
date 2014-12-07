@@ -2,6 +2,7 @@ package oose.logic.cells;
 
 import oose.interfaces.Orientation;
 import oose.interfaces.Piece;
+import oose.logic.Coord;
 import oose.logic.exceptions.BadIdException;
 
 /**
@@ -11,18 +12,7 @@ import oose.logic.exceptions.BadIdException;
 public class CellBuilder 
 {
 	private static CellBuilder instance = null; /** singleton instance of the class */
-	
-	private int fireplace_counter; /** the counter of fireplace cells */
-	private PieceObserver po; /** the fireplace cell observer */ 
-	
-	/**
-	 * Constructs a CellBuilder object
-	 */
-	private CellBuilder()
-	{
-		fireplace_counter = 0;
-		po = null;
-	}
+	private RotationRequestObserver rro; /** the fireplace cell observer */ 
 	
 	/**
 	 * Get the singleton instance of the CellBuilder class
@@ -36,77 +26,43 @@ public class CellBuilder
 	}
 	
 	/**
-	 * Count the number of generated fireplace
-	 * @return The number of fireplace
-	 */
-	public int nb_fireplace()
-	{
-		return fireplace_counter;
-	}
-	
-	/**
 	 * Initialize the supply observer of the fireplace cell
 	 * @param The supply observer
 	 * Must be called before any cell creation
 	 */
-	public void set_supply_observer(PieceObserver po)
+	public void set_supply_observer(RotationRequestObserver rro)
 	{
-		this.po = po;
-	}
-	
-	/**
-	 * Reset the object (for creating cells for a new board)
-	 */
-	public void reset()
-	{
-		fireplace_counter = 0;
+		this.rro = rro;
 	}
 	
 	/**
 	 * Build a cell
 	 * @param o The orientation of the piece
 	 * @param p The piece type
+	 * @param row The row index
+	 * @param col The col index
 	 * @return The brand new cell
 	 */
-	public Cell build_cell(Orientation o, Piece p)
+	public Cell build_cell(Orientation o, Piece p, int row, int col)
 	{
-		Cell c = null;
-		
-		switch(p)
-		{
-		case EMPTY:
-			c = new EmptyCell(o,p);
-			break;
-		case PIPELINE_ANGLED:
-		case PIPELINE_T:
-		case PIPELINE:
-			c = new PipelineCell(o,p);
-			break;
-		case FIREPLACE:
-			FireplaceCell fc = new FireplaceCell(o,p,fireplace_counter++);
-			c = fc;
-			break;
-		case GAS_ANGLED:
-		case GAS_T:
-		case GAS:
-			c = new GasCell(o,p);
-		}
-		
-		c.attach(po); // attach the observer
-		
-		return c;
+		Cell cell = new Cell(o,p);
+		cell.set_coord(new Coord(row, col));
+		cell.attach(rro); // attach the observer
+		return cell;
 	}
 	
 	/**
 	 * Create a cell based on the piece id and orientation id
 	 * @param orient_id The orientation id
 	 * @param piece_id The piece id
+	 * @param row The row index
+	 * @param col The col index
 	 * @return The brand new cell
 	 * @throws BadIdException Thrown if one the given id is invalid
 	 */
-	public Cell build_cell(int orient_id, int piece_id) throws BadIdException
+	public Cell build_cell(int orient_id, int piece_id, int row, int col) throws BadIdException
 	{
-		return build_cell(get_orient(orient_id), get_piece(piece_id));
+		return build_cell(get_orient(orient_id), get_piece(piece_id), row, col);
 	}
 	
 	/**

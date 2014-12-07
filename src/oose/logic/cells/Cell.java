@@ -1,29 +1,32 @@
 package oose.logic.cells;
 
-import java.util.Vector;
-
 import oose.interfaces.*;
+import oose.logic.Coord;
+import oose.logic.exceptions.BadSideIdException;
+import oose.logic.exceptions.NoRotationRequestObserverException;
 
 /**
  * Class representing a cell of the board
  * @author Servais Fabrice, Magera Floriane & Mormont Romain
  */
-public abstract class Cell extends ObservablePiece implements CellInterface
+public class Cell extends RotationRequestNotifier implements CellInterface
 {
-	Orientation orientation; /** cell orientation */
-	Piece piece; /** cell piece */
-	Cell[] neighbors = null; /** array of neighbors : top right bottom left*/
-	boolean supplied = false;  /** true if the cell is supplied */
-	boolean[] connections = null; /** array specifying if the current cell can connect to its neighbours (top right bottom left)  */
+	private Orientation orientation; /** cell orientation */
+	private Piece piece; /** cell piece */
+	private Cell[] neighbors = null; /** array of neighbors : [top right bottom left]*/
+	private boolean supplied = false;  /** true if the cell is supplied */
+	private boolean[] connections = null; /** array specifying if the current cell can 
+											connect to its neighbours (top right bottom left)  */
+	private Coord coordinates = null; // the coordinates of the cell
 	
 	/**
 	 * Initialize cell members
 	 */
 	private Cell()
 	{
+		connections = new boolean[4];
 		neighbors = new Cell[4];
 		supplied = false;
-		connections = new boolean[4];
 	}
 	
 	/**
@@ -34,8 +37,87 @@ public abstract class Cell extends ObservablePiece implements CellInterface
 	public Cell(Orientation o, Piece p)
 	{
 		this();
+		// warning : these must be set before calling has_***_link() 
 		orientation = o;
 		piece = p;
+
+		// initialize connections array
+		set_connections();
+	}
+	
+	/**
+	 * Set the coordinated of the cell
+	 * @param coord The coordinates
+	 */
+	public void set_coord(Coord coord)
+	{
+		coordinates = coord;
+	}
+	
+	/**
+	 * Set the current cell neighbors
+	 * @param neighbors The neighbors. They must be stored in the following order [top, right, bottom, left]
+	 */
+	public void set_neighbors(Cell[] neighbors)
+	{
+		this.neighbors = neighbors;
+	}
+	
+	/**
+	 * Initialize the connection array (piece and orientation must be set)
+	 */
+	private void set_connections()
+	{
+		// pre fill with false
+		for(int i = 0; i < 4; ++i)
+			connections[i] = false;
+		
+		// find the array for an UP orientation
+		switch(piece)
+		{
+		case FIREPLACE:
+		case GAS:
+			connections[0] = true;
+			break;
+			
+		case GAS_ANGLED:
+		case PIPELINE_ANGLED:
+			connections[0] = true;
+			connections[1] = true;
+			break;
+			
+		case GAS_T:
+		case PIPELINE_T:
+			connections[0] = true;
+			connections[1] = true;
+			connections[2] = true;
+			break;
+			
+		case PIPELINE:
+			connections[0] = true;
+			connections[2] = true;
+			break;
+			
+		default: // Empty piece don't need any rotation
+			return;
+		}
+		
+		// shift the array as many time as possible in order for it to match the cell orientation
+		switch(orientation)
+		{
+		case LEFT:
+			circular_shift(connections, false);
+			break;
+		case DOWN:
+			circular_shift(connections, true);
+			circular_shift(connections, true);
+			break;
+		case RIGHT:
+			circular_shift(connections, true);
+			break;
+		default: // UP orientation is ok
+			return;
+		}
 	}
 	
 	@Override
@@ -56,62 +138,86 @@ public abstract class Cell extends ObservablePiece implements CellInterface
 		return supplied;
 	}
 	
-	public void set_supplied(boolean b)
+	/**
+	 * Set the cell unsupplied
+	 */
+	public void set_unsupplied()
 	{
-		supplied = b;
+		if(is_gas()) return; // a gas cell is always supplied
+		supplied = false;
 	}
 	
 	/**
-	 * Change the state to "supply" and propagate to the neighbors.
+	 * Notify the cell that it is supplied from the given side and propagate to its 
+	 * possible connected unsupplied  neighbors
+	 * @param side The side from which the supply is coming
 	 */
-	public void update_supplied(){
-		if(supplied)
-			return;
-		
-		supplied = true;
-		
-		for(int i = 0 ; i < 4 ; ++i)
-			if(connections[i] && neighbors[i] != null && neighbors[i].has_link_with((i+2)%4)) //(i+2)%4 : top (0) <-> bottom (2) ; left (3) <-> right (1)
-				neighbors[i].update_supplied();
-		
-	}
-	
-	/**
-	 * Check if the cell have a link with another cell situated to the <orientation>, 
-	 * where 'orientation' = {0 : top, 1 : right, 2 : bottom, 3 : left}.
-	 * @param orientation Location of the Cell to compare with ({0 : top, 1 : right, 2 : bottom, 3 : left})
-	 * @return True if there is a link, false otherwise.
-	 */
-	public boolean has_link_with(int orientation){
-		switch(orientation)
+	private void receive_supply(int side)
+	{
+		try 
 		{
-		case 0:
-			return has_top_link();
-		case 1:
-			return has_right_link();
-		case 2:
-			return has_bottom_link();
-		case 3:
-			return has_left_link();
-		default:
-			return false;
+			if(supplied) // cell is already supplied => there is a cycle and we can stop
+				return;
+			
+			supplied = true; // the cell is now supplied
+			
+			// run through the neigbords to find if some of them are linked with the current cell
+			for(int i = 0 ; i < 4 ; ++i)
+				if(i != side && has_link_with(i)) // exclude the direction from which the supply came
+					neighbors[i].receive_supply((i + 2) % 4);
+				
+		} 
+		catch (BadSideIdException e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	/**
+	 * Notify a gas cell that it has to supply all the cells directly or indirectly connected to it
+	 */
+	public void start_supply()
+	{
+		if(!is_gas()) return;
+		
+		try 
+		{
+			for(int i = 0 ; i < 4 ; ++i)
+				if(has_link_with(i)) // exclude the direction from which the supply came
+					neighbors[i].receive_supply((i + 2) % 4);
+		} 
+		catch (BadSideIdException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
-	
+		
 	@Override
 	public void clockwiseNext() 
 	{
-		rotate(true);
+		// notify the logic that the cell must be rotated clockwise
+		try {
+			notify_request(coordinates, true);
+		} catch (NoRotationRequestObserverException e) {
+			System.err.println("No observer");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void counterClockwiseNext() 
 	{
-		rotate(false);
+		// notify the logic that the cell must be rotated counterclockwise
+		try {
+			notify_request(coordinates, false);
+		} catch (NoRotationRequestObserverException e) {
+			System.err.println("No observer");
+			e.printStackTrace();
+		}
 	}
 	
 	/**
-	 * Rotate the cell int the given direction
+	 * Rotate the cell in the given direction
+	 * This function does not update the supply
 	 * @param clockwise The rotation direction
 	 */
 	public void rotate(boolean clockwise) 
@@ -136,10 +242,8 @@ public abstract class Cell extends ObservablePiece implements CellInterface
 			return clockwise ? Orientation.UP : Orientation.DOWN;
 		case DOWN:
 			return clockwise ? Orientation.LEFT : Orientation.RIGHT;
-		case RIGHT:
+		default: // case RIGHT
 			return clockwise ? Orientation.DOWN : Orientation.UP;
-		default: 
-			return Orientation.UP; // normally, cannot be reached but otherwise error
 		}
 	}
 	
@@ -166,38 +270,50 @@ public abstract class Cell extends ObservablePiece implements CellInterface
 			else --i;
 		}
 	}
+
+	/**
+	 * Check if the cell have a link with another cell situated on the given side, 
+	 * side ids are {0 : top, 1 : right, 2 : bottom, 3 : left}.
+	 * @param side Side of the cell to check
+	 * @return True if there is a link, false otherwise.
+	 * @throws BadSideIdException If the side id is invalid
+	 */
+	private boolean has_link_with(int side) throws BadSideIdException
+	{
+		if(side < 0 || side >= 4)
+			throw new BadSideIdException("should be between 0 and 4");
+		
+		if(neighbors[side] == null) // no neigbors on this side
+			return false;
+		
+		return connections[side] && neighbors[side].has_connection((side + 2) % 4);
+	}
 	
 	/**
-	 * Set the current cell neighbors
-	 * @param neighbors The neighbors. They must be stored in the following order [top, right, bottom, left]
+	 * Return true if the cell has a connection on the given side
+	 * @param side The side  ({0 : top, 1 : right, 2 : bottom, 3 : left})
+	 * @return True if the cell has a connection
 	 */
-	public void set_neighbors(Cell[] neighbors)
+	private boolean has_connection(int side)
 	{
-		this.neighbors = neighbors;
+		return connections[side];
 	}
 
 	/**
-	 * Check if there is a link to the top Cell.
-	 * @return True if there is a link, false otherwise.
+	 * Check whether the cell is a fireplace
+	 * @return True if the cell is a fireplace
 	 */
-	protected abstract boolean has_top_link();
+	public boolean is_fireplace() 
+	{
+		return piece == Piece.FIREPLACE;
+	}
 	
 	/**
-	 * Check if there is a link to the right Cell.
-	 * @return True if there is a link, false otherwise.
+	 * Check whether the cell is a gas supplier
+	 * @return True if the cell is a gas supplier
 	 */
-	protected abstract boolean has_right_link();
-	
-	/**
-	 * Check if there is a link to the bottom Cell.
-	 * @return True if there is a link, false otherwise.
-	 */
-	protected abstract boolean has_bottom_link();
-	
-	/**
-	 * Check if there is a link to the left Cell.
-	 * @return True if there is a link, false otherwise.
-	 */
-	protected abstract boolean has_left_link();
-	
+	public boolean is_gas()
+	{
+		return piece == Piece.GAS || piece == Piece.GAS_ANGLED || piece == Piece.GAS_T;
+	}
 }
