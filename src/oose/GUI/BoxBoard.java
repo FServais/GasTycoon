@@ -20,9 +20,10 @@ public class BoxBoard extends JPanel {
 		
 		CellInterface board[][] = gui.getGame().getBoard();
 		width = board[1].length;
-		height = board.length / width;
+		height = board.length;
 		
 		BoardMouseListener m = new BoardMouseListener(gui);
+		boxTable = new BoxPanel[height][width];
 		
 		for(int i = 0; i < height; ++i) {
 			for(int j = 0; j < width; ++j) {
