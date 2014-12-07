@@ -1,0 +1,18 @@
+\select@language {french}
+\contentsline {section}{\numberline {1}Introduction}{3}
+\contentsline {section}{\numberline {2}Diagrams}{3}
+\contentsline {subsection}{\numberline {2.1}Conceptual}{3}
+\contentsline {subsection}{\numberline {2.2}Design}{3}
+\contentsline {subsubsection}{\numberline {2.2.1}Interfaces}{3}
+\contentsline {subsubsection}{\numberline {2.2.2}Logic}{3}
+\contentsline {subsubsection}{\numberline {2.2.3}Cells}{3}
+\contentsline {subsubsection}{\numberline {2.2.4}Algorithms and data structures}{3}
+\contentsline {section}{\numberline {3}Applied patterns}{3}
+\contentsline {subsection}{\numberline {3.1}Observer}{3}
+\contentsline {subsection}{\numberline {3.2}Command}{3}
+\contentsline {subsection}{\numberline {3.3}Builder and singleton}{3}
+\contentsline {section}{\numberline {4}Class hierarchy}{3}
+\contentsline {section}{\numberline {5}Conclusion}{3}
+\contentsline {section}{\numberline {A}Design}{3}
+\contentsline {subsection}{\numberline {A.1}Class diagrams}{3}
+\contentsline {subsection}{\numberline {A.2}Sequence diagrams}{3}
